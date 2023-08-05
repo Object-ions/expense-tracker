@@ -7,14 +7,18 @@ const form = document.getElementById('form');
 const text = document.getElementById('text');
 const amount = document.getElementById('amount');
 
-const dummyTransactions = [
-  { id: 1, text: 'flower', amount: -20 },
-  { id: 2, text: 'Salary', amount: 300 },
-  { id: 3, text: 'Book', amount: -10 },
-  { id: 4, text: 'Camera', amount: 150 }
-];
+// const dummyTransactions = [
+//   { id: 1, text: 'flower', amount: -20 },
+//   { id: 2, text: 'Salary', amount: 300 },
+//   { id: 3, text: 'Book', amount: -10 },
+//   { id: 4, text: 'Camera', amount: 150 }
+// ];
 
-let transactions = dummyTransactions;
+// let transactions = dummyTransactions;
+
+const localStorageTransactions = JSON.parse(localStorage.getItem('transactions'));
+
+let transactions = localStorage.getItem('transactions') !== null ? localStorageTransactions : [];
 
 //Add transaction
 function addTransaction(e) {
@@ -34,6 +38,8 @@ function addTransaction(e) {
     addTransactionDOM(transaction);
 
     updateValues();
+
+    updateLocalStorage();
 
     text.value = '';
     amount.value = ''
@@ -58,7 +64,7 @@ function addTransactionDOM(transaction) {
 
   item.innerHTML = `
   ${transaction.text} <span> ${sign} ${Math.abs(transaction.amount)} </span>
-  <button class="delete-btn" onclick ="removeTransaction(${transaction.id})">X</button>
+  <button class="delete-btn" onclick="removeTransaction(${transaction.id})">X</button>
   `;
 
   list.appendChild(item);
@@ -92,7 +98,14 @@ function updateValues() {
 function removeTransaction(id) {
   transactions = transactions.filter(transaction => transaction.id !== id);
 
+  updateLocalStorage();
+
   init();
+}
+
+//Update local storage transactions
+function updateLocalStorage() {
+  localStorage.setItem('transactions', JSON.stringify(transactions));
 }
 
 //Init app
